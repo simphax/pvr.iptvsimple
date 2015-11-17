@@ -19,6 +19,9 @@
  *
  */
 
+
+#include "kodi/libXBMC_addon.h"
+#include "kodi/libXBMC_pvr.h"
 #include "platform/util/StringUtils.h"
 #include <map>
 #include "platform/threads/threads.h"
@@ -272,6 +275,8 @@ void *PVRRecorderThread::Process(void)
     void *fileHandle;
     fileHandle = XBMC->OpenFileForWrite(videoFile.c_str(), true);
     
+	PVR->TriggerRecordingUpdate();
+
     string buffer;
     //int bytes_read;
     streamsize bytes_read;
