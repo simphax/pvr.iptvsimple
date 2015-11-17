@@ -28,6 +28,7 @@
 #include "kodi/libKODI_guilib.h"
 #include "PVRIptvData.h"
 #include "platform/util/util.h"
+ #include <dirent.h>
 
 using namespace ADDON;
 
@@ -527,10 +528,51 @@ bool CanSeekStream(void) {
   return true;
 }
 
+int GetRecordingsAmount(bool deleted) {
+  DIR *dp;
+  struct dirent *dirp;
+  if((dp  = opendir(g_recordingsPath.c_str())) == NULL) {
+    XBMC->Log(LOG_DEBUG, "Couldnt open dir %s", g_recordingsPath.c_str());
+    return PVR_ERROR_FAILED;
+  }
+  int count = 0;
+  while ((dirp = readdir(dp)) != NULL) {
+    string filename = string(dirp->d_name);
+    if(strcmp(filename.substr(0,1).c_str(), ".")) {
+      count++;
+    }
+  }
+  closedir(dp);
+  return count;
+}
+
+PVR_ERROR GetRecordings(ADDON_HANDLE handle, bool deleted) {
+  DIR *dp;
+  struct dirent *dirp;
+  if((dp  = opendir(g_recordingsPath.c_str())) == NULL) {
+    XBMC->Log(LOG_DEBUG, "Couldnt open dir %s", g_recordingsPath.c_str());
+    return PVR_ERROR_FAILED;
+  }
+  int id = 0;
+  while ((dirp = readdir(dp)) != NULL) {
+    string filename = string(dirp->d_name);
+    if(strcmp(filename.substr(0,1).c_str(), ".")) {
+      XBMC->Log(LOG_DEBUG, "Found recording: %s", filename.c_str());
+
+      PVR_RECORDING   tag;
+      PVR_STRCPY(tag.strRecordingId, to_string(id++).c_str());
+      PVR_STRCPY(tag.strTitle, filename.c_str());
+      PVR_STRCPY(tag.strPlot, "");
+      PVR_STRCPY(tag.strStreamURL, (g_recordingsPath + filename).c_str());
+      PVR->TransferRecordingEntry(handle, &tag);
+    }
+  }
+  closedir(dp);
+  return PVR_ERROR_NO_ERROR;
+}
+
 /** UNUSED API FUNCTIONS */
 const char * GetLiveStreamURL(const PVR_CHANNEL &channel)  { return ""; }
-int GetRecordingsAmount(bool deleted) { return -1; }
-PVR_ERROR GetRecordings(ADDON_HANDLE handle, bool deleted) { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR OpenDialogChannelScan(void) { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR CallMenuHook(const PVR_MENUHOOK &menuhook, const PVR_MENUHOOK_DATA &item) { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR DeleteChannel(const PVR_CHANNEL &channel) { return PVR_ERROR_NOT_IMPLEMENTED; }
