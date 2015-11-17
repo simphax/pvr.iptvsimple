@@ -65,6 +65,7 @@ bool        g_bCacheM3U     = false;
 bool        g_bCacheEPG     = false;
 int         g_iEPGLogos     = 0;
 std::string g_recordingsPath   = "";
+bool g_useCurl  = false;
 std::string g_ffmpegPath   = "";
 std::string g_ffmpegParams   = "";
 std::string g_rtmpdumpPath   = "";
@@ -181,6 +182,11 @@ void ADDON_ReadSettings(void)
     g_recordingsPath = buffer;
   }
   
+  if (!XBMC->GetSetting("useCurl", &g_useCurl))
+    {
+      g_useCurl = true;
+    }
+
   if (XBMC->GetSetting("ffmpegPath", &buffer)) {
     g_ffmpegPath = buffer;
   }
@@ -487,7 +493,7 @@ PVR_ERROR AddTimer(const PVR_TIMER &timer)
   return m_recorder->AddTimer (timer);
 }
 
-PVR_ERROR DeleteTimer(const PVR_TIMER &timer, bool bForceDelete, bool bDeleteScheduled)
+PVR_ERROR DeleteTimer(const PVR_TIMER &timer, bool bForceDelete)
 {
   return m_recorder->DeleteTimer (timer,bForceDelete);
 }
@@ -539,11 +545,6 @@ PVR_ERROR SetRecordingLastPlayedPosition(const PVR_RECORDING &recording, int las
 int GetRecordingLastPlayedPosition(const PVR_RECORDING &recording) { return -1; }
 PVR_ERROR GetRecordingEdl(const PVR_RECORDING&, PVR_EDL_ENTRY[], int*) { return PVR_ERROR_NOT_IMPLEMENTED; };
 PVR_ERROR GetTimerTypes(PVR_TIMER_TYPE types[], int *size) { return PVR_ERROR_NOT_IMPLEMENTED; }
-int GetTimersAmount(void) { return -1; }
-PVR_ERROR GetTimers(ADDON_HANDLE handle) { return PVR_ERROR_NOT_IMPLEMENTED; }
-PVR_ERROR AddTimer(const PVR_TIMER &timer) { return PVR_ERROR_NOT_IMPLEMENTED; }
-PVR_ERROR DeleteTimer(const PVR_TIMER &timer, bool bForceDelete) { return PVR_ERROR_NOT_IMPLEMENTED; }
-PVR_ERROR UpdateTimer(const PVR_TIMER &timer) { return PVR_ERROR_NOT_IMPLEMENTED; }
 void DemuxAbort(void) {}
 DemuxPacket* DemuxRead(void) { return NULL; }
 unsigned int GetChannelSwitchDelay(void) { return 0; }

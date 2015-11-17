@@ -35,6 +35,7 @@
   <category label="30100">
     <setting id="recordingsPath" label="30101" type="folder" />
     <setting id="fileExtension" label="30105" type="text" default="flv" />
+    <setting id="useCurl"  type="bool" label="30110" default="true" />
     <setting id="rtmpdumpPath" label="30102" type="file" />
     <setting id="ffmpegPath" label="30103" type="file" />
     <setting id="ffmpegParams" label="30104" type="text" default="-ar 44100" />

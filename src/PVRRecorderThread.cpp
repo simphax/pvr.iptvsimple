@@ -45,6 +45,7 @@ extern string g_ffmpegParams;
 extern string g_rtmpdumpPath;
 extern string g_fileExtension;
 extern int g_streamTimeout;
+extern bool g_useCurl;
 
 extern bool s_triggerTimerUpdate;
 
@@ -206,53 +207,59 @@ void *PVRRecorderThread::Process(void)
 	    }
         }
     }
-    
-    if(strStreamUrl.substr(0, 7) == "rtmp://"
+    if(g_useCurl)
+    {
+		strCommand = "/usr/bin/curl";
+		strParams = " "+strParams;
+		string strCommandLog = strCommand+strParams;
+		XBMC->Log(LOG_NOTICE,"Starting curl: %s",strCommandLog.c_str());
+    }
+    else if(strStreamUrl.substr(0, 7) == "rtmp://"
        || strStreamUrl.substr(0, 8) == "rtmpt://"
        || strStreamUrl.substr(0, 8) == "rtmpe://"
        || strStreamUrl.substr(0, 9) == "rtmpte://"
        || strStreamUrl.substr(0, 8) == "rtmps://")
     {
-	strParams = " -r "+strParams;
-	if (g_rtmpdumpPath.length()==0)
-	{
-	    XBMC->Log(LOG_ERROR,"Path to rtmpdump binary is not set. Please change addon configuration.");
-	    entry.Status = PVR_STREAM_STOPPED;
-            entry.Timer.state= PVR_TIMER_STATE_ERROR;
-	    p_RecJob->updateJobEntry(entry);
-	    s_triggerTimerUpdate = true;
-	    return NULL;
-	}
-	   
-	string strCommandLog = g_rtmpdumpPath+strParams;
-	strCommand = g_rtmpdumpPath;
-	XBMC->Log(LOG_NOTICE,"Starting rtmpdump: %s", strCommandLog.c_str());
+		strParams = " -r "+strParams;
+		if (g_rtmpdumpPath.length()==0)
+		{
+		    XBMC->Log(LOG_ERROR,"Path to rtmpdump binary is not set. Please change addon configuration.");
+		    entry.Status = PVR_STREAM_STOPPED;
+	            entry.Timer.state= PVR_TIMER_STATE_ERROR;
+		    p_RecJob->updateJobEntry(entry);
+		    s_triggerTimerUpdate = true;
+		    return NULL;
+		}
+		   
+		string strCommandLog = g_rtmpdumpPath+strParams;
+		strCommand = g_rtmpdumpPath;
+		XBMC->Log(LOG_NOTICE,"Starting rtmpdump: %s", strCommandLog.c_str());
     }
     else
     {
-	strParams =  " -i \""+strParams+"\" "+g_ffmpegParams+" -f "+g_fileExtension+" -";
-	if (g_ffmpegPath.length()==0)
-	{
-	    XBMC->Log(LOG_ERROR,"Path to ffmpeg binary is not set. Please change addon configuration.");
-	    entry.Status = PVR_STREAM_STOPPED;
-            entry.Timer.state= PVR_TIMER_STATE_ERROR;
-	    p_RecJob->updateJobEntry(entry);
-	    s_triggerTimerUpdate = true;
-	    return NULL;
-	}
-	
-	if (g_ffmpegParams.length()==0)
-	{
-	    XBMC->Log(LOG_ERROR,"Recompression params for ffmpeg are not set. Please change addon configuration.");
-	    entry.Status = PVR_STREAM_STOPPED;
-            entry.Timer.state= PVR_TIMER_STATE_ERROR;
-	    p_RecJob->updateJobEntry(entry);
-	    return NULL;
-	}
-	
-	string strCommandLog = g_ffmpegPath+strParams;
-	strCommand = g_ffmpegPath;
-	XBMC->Log(LOG_NOTICE,"Starting ffmpeg: %s",strCommandLog.c_str());
+		strParams =  " -i \""+strParams+"\" "+g_ffmpegParams+" -f "+g_fileExtension+" -";
+		if (g_ffmpegPath.length()==0)
+		{
+		    XBMC->Log(LOG_ERROR,"Path to ffmpeg binary is not set. Please change addon configuration.");
+		    entry.Status = PVR_STREAM_STOPPED;
+	            entry.Timer.state= PVR_TIMER_STATE_ERROR;
+		    p_RecJob->updateJobEntry(entry);
+		    s_triggerTimerUpdate = true;
+		    return NULL;
+		}
+		
+		if (g_ffmpegParams.length()==0)
+		{
+		    XBMC->Log(LOG_ERROR,"Recompression params for ffmpeg are not set. Please change addon configuration.");
+		    entry.Status = PVR_STREAM_STOPPED;
+	            entry.Timer.state= PVR_TIMER_STATE_ERROR;
+		    p_RecJob->updateJobEntry(entry);
+		    return NULL;
+		}
+		
+		string strCommandLog = g_ffmpegPath+strParams;
+		strCommand = g_ffmpegPath;
+		XBMC->Log(LOG_NOTICE,"Starting ffmpeg: %s",strCommandLog.c_str());
     }
     
     //POSIX

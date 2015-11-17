@@ -153,3 +153,7 @@ msgstr ""
 msgctxt "#30109"
 msgid "Stream timeout (sec)"
 msgstr ""
+
+msgctxt "#30110"
+msgid "Use CURL"
+msgstr ""
