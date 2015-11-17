@@ -514,9 +514,21 @@ int GetTimersAmount(void)
   return job; 
 }
 
+
+bool CanPauseStream(void) {
+    return true;
+}
+
+bool IsTimeshifting(void) { 
+  return true;
+}
+
+bool CanSeekStream(void) { 
+  return true;
+}
+
 /** UNUSED API FUNCTIONS */
 const char * GetLiveStreamURL(const PVR_CHANNEL &channel)  { return ""; }
-bool CanPauseStream(void) { return false; }
 int GetRecordingsAmount(bool deleted) { return -1; }
 PVR_ERROR GetRecordings(ADDON_HANDLE handle, bool deleted) { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR OpenDialogChannelScan(void) { return PVR_ERROR_NOT_IMPLEMENTED; }
@@ -548,9 +560,7 @@ PVR_ERROR GetTimerTypes(PVR_TIMER_TYPE types[], int *size) { return PVR_ERROR_NO
 void DemuxAbort(void) {}
 DemuxPacket* DemuxRead(void) { return NULL; }
 unsigned int GetChannelSwitchDelay(void) { return 0; }
-bool IsTimeshifting(void) { return false; }
 void PauseStream(bool bPaused) {}
-bool CanSeekStream(void) { return false; }
 bool SeekTime(int,bool,double*) { return false; }
 void SetSpeed(int) {};
 time_t GetPlayingTime() { return 0; }
