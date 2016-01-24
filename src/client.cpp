@@ -529,6 +529,7 @@ bool CanSeekStream(void) {
 }
 
 int GetRecordingsAmount(bool deleted) {
+    XBMC->Log(LOG_DEBUG, "Get GetRecordingsAmount");
   DIR *dp;
   struct dirent *dirp;
   if((dp  = opendir(g_recordingsPath.c_str())) == NULL) {
@@ -543,10 +544,13 @@ int GetRecordingsAmount(bool deleted) {
     }
   }
   closedir(dp);
+
+    XBMC->Log(LOG_DEBUG, " Recordings aomut %d",count);
   return count;
 }
 
 PVR_ERROR GetRecordings(ADDON_HANDLE handle, bool deleted) {
+    XBMC->Log(LOG_DEBUG, "Get recordings");
   DIR *dp;
   struct dirent *dirp;
   if((dp  = opendir(g_recordingsPath.c_str())) == NULL) {
@@ -561,9 +565,19 @@ PVR_ERROR GetRecordings(ADDON_HANDLE handle, bool deleted) {
 
       PVR_RECORDING   tag;
       PVR_STRCPY(tag.strRecordingId, to_string(id++).c_str());
-      PVR_STRCPY(tag.strTitle, filename.c_str());
+      PVR_STRCPY(tag.strTitle, filename.substr(0, filename.size() - 1 - g_fileExtension.size() - 22).c_str());
       PVR_STRCPY(tag.strPlot, "");
       PVR_STRCPY(tag.strStreamURL, (g_recordingsPath + filename).c_str());
+      PVR_STRCPY(tag.strDirectory, filename.substr(filename.size() - 1 - g_fileExtension.size() - 20, 4).c_str());
+      tag.bIsDeleted = false;
+
+      const char *time_details = filename.substr(filename.size() - 1 - g_fileExtension.size() - 20, 19).c_str();
+      XBMC->Log(LOG_DEBUG, "time_details: %s", time_details);
+      struct tm tm;
+      strptime(time_details, "%Y-%m-%d %H-%M-%S", &tm);
+      time_t t = mktime(&tm);
+      tag.recordingTime = t;
+      
       PVR->TransferRecordingEntry(handle, &tag);
     }
   }

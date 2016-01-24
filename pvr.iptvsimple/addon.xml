@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="pvr.iptvsimple"
-  version="1.12.6"
+  version="1.13.0"
   name="PVR IPTV Simple Client"
   provider-name="nightik">
   <requires>
@@ -10,7 +10,7 @@
   </requires>
   <extension
     point="xbmc.pvrclient"
-    library_osx="pvr.iptvsimple.1.12.6.dylib"/>
+    library_osx="pvr.iptvsimple.1.13.0.dylib"/>
   <extension point="xbmc.addon.metadata">
     <summary lang="bg_BG">Kodi ПВР добавка за поддръжка на IPTV. https://github.com/afedchin/Kodi-addon-iptvsimple/wiki/IPTV-Simple-Home</summary>
     <summary lang="ca_ES">Complement PVR de Kodi per a al suport d'IPTV https://github.com/afedchin/Kodi-addon-iptvsimple/wiki/IPTV-Simple-Home</summary>
